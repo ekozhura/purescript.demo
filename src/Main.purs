@@ -11,5 +11,5 @@ import Halogen.Util (appendToBody)
 import qualified App.App as App
 
 main = runAff throwException (const (pure unit)) $ do 
-  app <- runUI App.ui unit
+  app <- runUI App.ui { count: 0 }
   appendToBody app.node

@@ -4,12 +4,32 @@ import Prelude
 
 import Halogen
 import qualified Halogen.HTML.Indexed as H
+import qualified Halogen.HTML.Events.Indexed as E
 
-data Input a = Input a
 
-ui :: forall g. (Functor g) => Component Unit Input g
+type State = 
+  { count :: Int
+  }
+
+data Input a 
+  = Increment a
+  | Decrement a
+
+ui :: forall g. (Functor g) => Component State Input g
 ui = component render eval
   where 
-    render _ = H.div_ [ H.h1_ [ H.text "Hello, World!!!" ] ]
-    eval :: Eval Input Unit Input g
-    eval (Input a) = pure a
+    render state = 
+      H.div_ 
+        [ H.button [ E.onClick $ E.input_ Decrement ]
+                   [ H.text "-" ]
+        , H.p_ [ H.text (show state.count) ]
+        , H.button [ E.onClick $ E.input_ Increment ]
+                   [ H.text "+" ]
+        ]
+    eval :: Eval Input State Input g
+    eval (Increment next) = do 
+      modify (\state -> state { count = state.count + 1 })
+      pure next
+    eval (Decrement next) = do
+      modify (\state -> state { count = state.count - 1 })
+      pure next
